@@ -195,7 +195,7 @@ class ChatGPT:
                         if ChatMode.raw_mode:
                             rprint(content, end="", flush=True),
                         else:
-                            live.update(Markdown(reply), refresh=True)
+                            live.update(Markdown(reply, inline_code_lexer='rainbow_dash', code_theme='rainbow_dash'), refresh=True)
             except KeyboardInterrupt:
                 live.stop()
                 console.print(_('gpt_term.Aborted'))
@@ -609,7 +609,7 @@ def print_message(message: Dict[str, str]):
         if ChatMode.raw_mode:
             print(content)
         else:
-            console.print(Markdown(content), new_line_start=True)
+            console.print(Markdown(content, inline_code_lexer='rainbow_dash', code_theme='rainbow_dash'), new_line_start=True)
 
 
 def copy_code(message: Dict[str, str], select_code_idx: int = None):
@@ -630,7 +630,7 @@ def copy_code(message: Dict[str, str], select_code_idx: int = None):
             for codes in code_list:
                 code_num += 1
                 console.print(_("gpt_term.code_num",code_num=code_num))
-                console.print(Markdown(codes))
+                console.print(Markdown(codes, inline_code_lexer='rainbow_dash', code_theme='rainbow_dash'))
 
             select_code_idx = prompt(
                 _("gpt_term.code_select"), style=style, validator=NumberValidator())
