@@ -232,7 +232,7 @@ class ChatGPT:
                 _('gpt_term.delete_first_conversation_yes',truncated_question=truncated_question,tokens_saved=tokens_saved))
         else:
             console.print(_('gpt_term.delete_first_conversation_no'))
-    
+
     def delete_all_conversation(self):
         del self.messages[1:]
         self.title = None
@@ -419,7 +419,7 @@ class ChatGPT:
         url_usage = "https://platform.openai.com/usage"
         console.print(f"Please go to {url_usage} to check usage.")
         return False
-    
+
     def set_host(self, host: str):
         self.host = host
         self.endpoint = self.host + "/v1/chat/completions"
@@ -457,7 +457,7 @@ class ChatGPT:
                 console.print(_("gpt_term.stream_overflow_visible"))
         else:
             console.print(_("gpt_term.stream_overflow_no_changed",old_overflow=old_overflow))
-        
+
 
     def set_model(self, new_model: str):
         old_model = self.model
@@ -466,7 +466,9 @@ class ChatGPT:
                 _("gpt_term.model_set"),old_model=old_model)
             return
         self.model = str(new_model)
-        if "gpt-4-1106-preview" in self.model:
+        if "gpt-4o" in self.model:
+            self.tokens_limit = 128000
+        elif "gpt-4-1106-preview" in self.model:
             self.tokens_limit = 128000
         elif "gpt-4-vision-preview" in self.model:
             self.tokens_limit = 128000
@@ -517,16 +519,16 @@ class CommandCompleter(Completer):
             '/last': None,
             '/copy': {"code", "all"},
             '/model': {
-                "gpt-4-1106-preview", 
-                "gpt-4-vision-preview", 
-                "gpt-4", 
-                "gpt-4-0613", 
-                "gpt-4-32k", 
-                "gpt-4-32k-0613", 
-                "gpt-3.5-turbo-1106", 
-                "gpt-3.5-turbo", 
-                "gpt-3.5-turbo-0613", 
-                "gpt-3.5-turbo-16k", 
+                "gpt-4-1106-preview",
+                "gpt-4-vision-preview",
+                "gpt-4",
+                "gpt-4-0613",
+                "gpt-4-32k",
+                "gpt-4-32k-0613",
+                "gpt-3.5-turbo-1106",
+                "gpt-3.5-turbo",
+                "gpt-3.5-turbo-0613",
+                "gpt-3.5-turbo-16k",
                 "gpt-3.5-turbo-16k-0613"},
             '/save': PathCompleter(file_filter=self.path_filter),
             '/system': None,
@@ -595,7 +597,7 @@ class FloatRangeValidator(Validator):
             raise ValidationError(message=_("gpt_term.Error_input_least",min_value=self.min_value))
         if self.max_value is not None and value > self.max_value:
             raise ValidationError(message=_("gpt_term.Error_input_most",max_value=self.max_value))
-        
+
 temperature_validator = FloatRangeValidator(min_value=0.0, max_value=2.0)
 
 def print_message(message: Dict[str, str]):
@@ -790,7 +792,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
         if new_temperature != str(chat_gpt.temperature):
             chat_gpt.set_temperature(new_temperature)
         else:
-            console.print(_("gpt_term.No_change"))            
+            console.print(_("gpt_term.No_change"))
 
     elif command.startswith('/title'):
         args = command.split()
@@ -853,7 +855,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
         console.print(Panel(string,
                             title=_("gpt_term.version_name"), title_align='left', width=28))
         threadlock_remote_version.release()
-    
+
     elif command.startswith('/lang'):
         args = command.split()
         if len(args) > 1:
@@ -875,7 +877,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
 
     elif command == '/help':
         console.print(_("gpt_term.help_text"))
-        
+
     else:
         set_command = set(command)
         min_levenshtein_distance = len(command)
@@ -887,7 +889,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
                 if len(set_command & set_slash_command) / len(set_command | set_slash_command) >= 0.75:
                     most_similar_command = slash_command
                     min_levenshtein_distance = this_levenshtein_distance
-        
+
         console.print(_("gpt_term.help_uncommand",command=command), end=" ")
         if most_similar_command:
             console.print(_("gpt_term.help_mean_command",most_similar_command=most_similar_command))
@@ -965,7 +967,7 @@ def set_config_by_args(args: argparse.Namespace, config_ini: ConfigParser):
     if args.set_loglevel:   config_need_to_set.update({"LOG_LEVEL"           : args.set_loglevel})
     if args.set_gentitle:   config_need_to_set.update({"AUTO_GENERATE_TITLE" : args.set_gentitle})
     # 新的语言设置:
-    if args.set_lang:       
+    if args.set_lang:
         config_need_to_set.update({"LANGUAGE": args.set_lang})
         _=set_lang(args.set_lang)
     # here: when set lang is called, set language before printing 'set-successful' messages
@@ -1078,10 +1080,10 @@ def main():
     chat_save_perfix = config.get("CHAT_SAVE_PERFIX", "./chat_history_")
 
     chat_gpt = ChatGPT(api_key, api_timeout)
-    
+
     if config.get("OPENAI_HOST"):
         chat_gpt.set_host(config.get("OPENAI_HOST"))
-    
+
     if config.get("OPENAI_MODEL"):
         chat_gpt.set_model(config.get("OPENAI_MODEL"))
 
@@ -1118,7 +1120,7 @@ def main():
             log.info(f"Chat history successfully loaded from: {args.load}")
             console.print(
                 _("gpt_term.load_chat_history",load=args.load), highlight=False)
-            
+
     if args.query:
         query_text = " ".join(args.query)
         log.info(f"> {query_text}")
@@ -1164,7 +1166,7 @@ def main():
     log.info(f"Total tokens spent: {chat_gpt.total_tokens_spent}")
     console.print(
         _("gpt_term.spent_token",total_tokens_spent=chat_gpt.total_tokens_spent))
-    
+
     threadlock_remote_version.acquire()
     if remote_version and remote_version > local_version:
         console.print(Panel(Group(
