@@ -459,7 +459,7 @@ class ChatGPT:
             console.print(_("gpt_term.stream_overflow_no_changed",old_overflow=old_overflow))
 
 
-    def set_model(self, new_model: str):
+    def set_model(self, new_model: str, init: bool = False):
         old_model = self.model
         if not new_model:
             console.print(
@@ -484,8 +484,12 @@ class ChatGPT:
             self.tokens_limit = 4096
         else:
             self.tokens_limit = float('nan')
-        console.print(
-            _("gpt_term.model_changed",old_model=old_model,new_model=new_model))
+
+        if init:
+            console.print(_("gpt_term.model_init",model=new_model))
+        else:
+            console.print(
+                _("gpt_term.model_changed",old_model=old_model,new_model=new_model))
 
     def set_timeout(self, timeout):
         try:
@@ -522,7 +526,7 @@ class CommandCompleter(Completer):
                 "gpt-4o",
                 "gpt-4o-mini",
                 "gpt-4o-all",
-                "n-gpt-4o"
+                "n-gpt-4o",
                 "qwen1.5-110b-chat",
                 # "gpt-4-1106-preview",
                 # "gpt-4-vision-preview",
@@ -1091,7 +1095,7 @@ def main():
         chat_gpt.set_host(config.get("OPENAI_HOST"))
 
     if config.get("OPENAI_MODEL"):
-        chat_gpt.set_model(config.get("OPENAI_MODEL"))
+        chat_gpt.set_model(config.get("OPENAI_MODEL"), init=True)
 
     if not config.getboolean("AUTO_GENERATE_TITLE", True):
         chat_gpt.auto_gen_title_background_enable = False

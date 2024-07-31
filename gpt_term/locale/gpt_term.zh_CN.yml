@@ -1,8 +1,8 @@
 zh_CN:
   welcome: "[dim]你好, 欢迎和 GPT 聊天. 输入`[deep_sky_blue3]/help[/]` 显示可用命令."
   exit: "退出中..."
-  spent_token: "[deep_sky_blue3]已花费的 token 总数:[bold]%{total_tokens_spent}" 
-  save_api_key: "将 API Key 保存到配置文件中?" 
+  spent_token: "[deep_sky_blue3]已花费的 token 总数:[bold]%{total_tokens_spent}"
+  save_api_key: "将 API Key 保存到配置文件中?"
   input_api_key: "未找到 OpenAI API Key, 请输入:"
   config_key_to_shell_key: "配置项 `[deep_sky_blue3]%{key_word}[/]` 已设置为 [green]%{val}[/]"
   log_level_error: "[dim]无效的日志级别: %{e}，请检查 config.ini文件. 日志级别将设置为 INFO."
@@ -45,8 +45,9 @@ zh_CN:
   #
   model_set: "[dim]输入为空，模型保持为 '%{old_model}'."
   model_changed: "[dim]模型已从 '%{old_model}' 修改为 '%{new_model}'."
+  model_init: "[dim]模型已初始化为 '%{model}'."
   #
-  multi_line_enabled: "[dim]多行模式[green]已启用[/]，按 [[deep_sky_blue3]Esc[/]] + [[deep_sky_blue3]ENTER[/]] 提交." 
+  multi_line_enabled: "[dim]多行模式[green]已启用[/]，按 [[deep_sky_blue3]Esc[/]] + [[deep_sky_blue3]ENTER[/]] 提交."
   multi_line_disabled: "[dim]多行模式[bright_red]已禁用[/]."
   #
   ChatGPT_thinking: "[bold cyan]ChatGPT 正在思考..."
@@ -57,7 +58,7 @@ zh_CN:
   Error_look_log: "[red]错误: %{error_msg}. 请查看日志获取更多信息."
   Error_get_url: "[red]获取 %{url} 错误: %{error_msg}"
   Error_input_number: "[red]输入必须是数字"
-  Error_input_least: "输入必须至少为 %{min_value}" 
+  Error_input_least: "输入必须至少为 %{min_value}"
   Error_input_most: "输入必须最多为 %{max_value}"
   No_change: "[dim]未修改."
   Error_input_int: "请输入整数!"
@@ -90,7 +91,7 @@ zh_CN:
   delete_all: "[dim]当前聊天已清除."
   delete_nothing: "[dim]无操作可执行. 可用的删除命令: `[deep_sky_blue3]/delete first[/]` 或 `[deep_sky_blue3]/delete all[/]`."
   #
-  version_all: "[bold blue]本地版本: [/]\tv%{local_version}\n[bold green]远程版本: [/]\tv%{remote_version}" 
+  version_all: "[bold blue]本地版本: [/]\tv%{local_version}\n[bold green]远程版本: [/]\tv%{remote_version}"
   version_name: "版本"
   #
   tokens_reached: "已达到 token 限制, 如需继续对话，可使用 `[deep_sky_blue3]/delete first[/]` 删除最早对话，或者使用 `[deep_sky_blue3]/model[/]` 切换 token 上限更高的模型"

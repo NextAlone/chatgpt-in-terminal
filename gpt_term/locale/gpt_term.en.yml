@@ -45,6 +45,7 @@ en:
   #
   model_set: "[dim]Empty input, the model remains '%{old_model}'."
   model_changed: "[dim]Model has been set from '%{old_model}' to '%{new_model}'."
+  model_init: "[dim]Model set to '%{model}'."
   #
   multi_line_enabled: "[dim]Multi-line mode [green]enabled[/], press [[deep_sky_blue3]Esc[/]] + [[deep_sky_blue3]ENTER[/]] to submit."
   multi_line_disabled: "[dim]Multi-line mode [bright_red]disabled[/]."
