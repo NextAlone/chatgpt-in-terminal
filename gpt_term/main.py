@@ -63,6 +63,17 @@ remote_version = None
 local_version = parse_version(__version__)
 threadlock_remote_version = threading.Lock()
 
+PROMPT_MAPS = {
+    "Morse code translator": "You are a Morse code translator. You can help people translate Morse code to text and vice versa. Just return the text or Morse code translation.",
+    "Algorithm expert": "You are an algorithm expert. You can help people solve algorithm problems. Just return the solution.",
+    "Sql query helper": "You are a SQL query helper. You can help people write SQL queries. Just return the SQL query. If you have any questions, please ask.",
+    "Python code assistant": "You are a Python code assistant. You can help people write Python code. Just return the Python code.",
+    "Rust code assistant": "You are a Rust code assistant. You can help people write Rust code. Just return the Rust code.",
+    "Kotlin or Android code assistant": "You are a Kotlin or Android code assistant. You can help people write Kotlin or Android code. Just return the Kotlin or Android code.",
+    "Regex helper": "You are a regex helper. You can help people write regular expressions. Just return the regular expression. If you have any questions, please ask.",
+    "Linux command helper": "You are a Linux command helper. You can help people write Linux commands. Just return the Linux command. If you have any questions, please ask. If I need to install a package, please let me know.",
+}
+
 
 class ChatMode:
     raw_mode = False
@@ -427,6 +438,8 @@ class ChatGPT:
     def modify_system_prompt(self, new_content: str):
         if self.messages[0]['role'] == 'system':
             old_content = self.messages[0]['content']
+            if new_content in PROMPT_MAPS:
+                new_content = PROMPT_MAPS[new_content] + '\nCurrent date: ' + datetime.now().strftime('%Y-%m-%d')
             self.messages[0]['content'] = new_content
             console.print(
                 _("gpt_term.system_prompt_modified",old_content=old_content,new_content=new_content))
@@ -541,7 +554,16 @@ class CommandCompleter(Completer):
                 # "gpt-3.5-turbo-16k-0613"
             },
             '/save': PathCompleter(file_filter=self.path_filter),
-            '/system': None,
+            '/system': {
+                "Morse code translator",
+                "Algorithm expert",
+                "Sql query helper",
+                "Python code assistant",
+                "Rust code assistant",
+                "Kotlin or Android code assistant",
+                "Regex helper",
+                "Linux command helper",
+            },
             '/rand': None,
             '/temperature': None,
             '/title': None,
