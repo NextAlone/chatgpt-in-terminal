@@ -118,7 +118,7 @@ class ChatGPT:
             "Authorization": f"Bearer {api_key}"
         }
         self.messages = [
-            {"role": "system", "content": f"You are a helpful assistant.\nCurrent date: {datetime.now().strftime('%Y-%m-%d')}"}]
+            {"role": "user", "content": f"You are a helpful assistant.\nCurrent date: {datetime.now().strftime('%Y-%m-%d')}"}]
         self.model = 'gpt-3.5-turbo'
         self.tokens_limit = 4096
         # as default: gpt-3.5-turbo has a tokens limit as 4096
@@ -536,6 +536,8 @@ class CommandCompleter(Completer):
             '/last': None,
             '/copy': {"code", "all"},
             '/model': {
+                "o1-mini",
+                "o1-preview",
                 "gpt-4o",
                 "gpt-4o-mini",
                 "gpt-4o-all",
@@ -640,10 +642,10 @@ def print_message(message: Dict[str, str]):
         print(f"> {content}")
     elif role == "assistant":
         console.print("ChatGPT: ", end='', style="bold cyan")
-        if ChatMode.raw_mode:
-            print(content)
-        else:
-            console.print(Markdown(content, inline_code_lexer='rainbow_dash', code_theme='rainbow_dash'), new_line_start=True)
+        # if ChatMode.raw_mode:
+            # print(content)
+        # else:
+        console.print(Markdown(content, inline_code_lexer='rainbow_dash', code_theme='rainbow_dash'), new_line_start=True)
 
 
 def copy_code(message: Dict[str, str], select_code_idx: int = None):
@@ -757,7 +759,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
             new_model = args[1]
         else:
             new_model = prompt(
-                "OpenAI API model: ", default=chat_gpt.model, style=style)
+                "OpenAI API model: ", default=chat_gpt.model, style=style, enable_system_prompt=False)
         if new_model != chat_gpt.model:
             chat_gpt.set_model(new_model)
         else:
@@ -799,7 +801,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
             # but title auto generation can also be disabled; therefore when title is not generated then try generating a new one
             date_filename = f'{chat_save_perfix}{datetime.now().strftime("%Y-%m-%d_%H,%M,%S")}.json'
             filename = prompt(
-                "Save to: ", default=gen_filename or date_filename, style=style)
+                "Save to: ", default=gen_filename or date_filename, style=style, enable_system_prompt=False)
         chat_gpt.save_chat_history(filename)
 
     elif command.startswith('/system'):
@@ -808,7 +810,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
             new_content = ' '.join(args[1:])
         else:
             new_content = prompt(
-                _("gpt_term.system_prompt"), default=chat_gpt.messages[0]['content'], style=style, key_bindings=key_bindings)
+                _("gpt_term.system_prompt"), default=chat_gpt.messages[0]['content'], style=style, key_bindings=key_bindings, enable_system_prompt=False)
         if new_content != chat_gpt.messages[0]['content']:
             chat_gpt.modify_system_prompt(new_content)
         else:
@@ -820,7 +822,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
             new_temperature = args[1]
         else:
             new_temperature = prompt(
-                _("gpt_term.new_temperature"), default=str(chat_gpt.temperature), style=style, validator=temperature_validator)
+                _("gpt_term.new_temperature"), default=str(chat_gpt.temperature), style=style, validator=temperature_validator, enable_system_prompt=False)
         if new_temperature != str(chat_gpt.temperature):
             chat_gpt.set_temperature(new_temperature)
         else:
@@ -845,7 +847,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
             new_timeout = args[1]
         else:
             new_timeout = prompt(
-                _("gpt_term.timeout_prompt"), default=str(chat_gpt.timeout), style=style)
+                _("gpt_term.timeout_prompt"), default=str(chat_gpt.timeout), style=style, enable_system_prompt=False)
         if new_timeout != str(chat_gpt.timeout):
             chat_gpt.set_timeout(new_timeout)
         else:
@@ -894,7 +896,7 @@ def handle_command(command: str, chat_gpt: ChatGPT, key_bindings: KeyBindings, c
             new_lang = args[1]
         else:
             new_lang = prompt(
-                _("gpt_term.new_lang_prompt"), default=get_lang(), style=style)
+                _("gpt_term.new_lang_prompt"), default=get_lang(), style=style, enable_system_prompt=False)
         if new_lang != get_lang():
             if new_lang in supported_langs:
                 _=set_lang(new_lang)
@@ -1098,7 +1100,7 @@ def main():
 
     if not api_key:
         log.debug("API Key not found, waiting for input")
-        api_key = prompt(_("gpt_term.input_api_key"))
+        api_key = prompt(_("gpt_term.input_api_key"), enable_system_prompt=False)
         if confirm(_("gpt_term.save_api_key"), suffix=" (y/N) "):
             config["OPENAI_API_KEY"] = api_key
             write_config(config_ini)
