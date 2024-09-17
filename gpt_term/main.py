@@ -147,7 +147,7 @@ class ChatGPT:
         try:
             with console.status(_("gpt_term.ChatGPT_thinking")):
                 response = requests.post(
-                    self.endpoint, headers=self.headers, data=json.dumps(data), timeout=self.timeout, stream=ChatMode.stream_mode)
+                    self.endpoint, headers=self.headers, data=json.dumps(data), timeout=self.timeout, stream=ChatMode.stream_mode if not self.model.startswith('o1') else False)
             # 匹配4xx错误，显示服务器返回的具体原因
             if response.status_code // 100 == 4:
                 error_msg = response.json()['error']['message']
@@ -214,7 +214,7 @@ class ChatGPT:
                 return {'role': 'assistant', 'content': reply}
 
     def process_response(self, response: requests.Response):
-        if ChatMode.stream_mode:
+        if ChatMode.stream_mode and not self.model.startswith('o1'):
             return self.process_stream_response(response)
         else:
             response_json = response.json()
@@ -271,7 +271,7 @@ class ChatGPT:
             data = {
                 "model": self.model,
                 "messages": self.messages,
-                "stream": ChatMode.stream_mode,
+                "stream": ChatMode.stream_mode if not self.model.startswith('o1') else False,
                 "temperature": self.temperature
             }
             response = self.send_request(data)
@@ -495,6 +495,10 @@ class ChatGPT:
             self.tokens_limit = 16385
         elif "gpt-3.5-turbo" in self.model:
             self.tokens_limit = 4096
+        elif "o1-mini" in self.model:
+            self.tokens_limit = 32768
+        elif "o1-preview" in self.model:
+            self.tokens_limit = 65536
         else:
             self.tokens_limit = float('nan')
 
