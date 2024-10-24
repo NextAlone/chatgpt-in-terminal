@@ -155,3 +155,5 @@ en:
       /lang \[new_language]     - Switch language
       /help                    - Show this help message
       /exit                    - Exit the application"
+
+  chat_time_used: "Time used: %time_used s"

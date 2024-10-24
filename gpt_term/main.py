@@ -72,6 +72,7 @@ PROMPT_MAPS = {
     "Kotlin or Android code assistant": "You are a Kotlin or Android code assistant. You can help people write Kotlin or Android code. Just return the Kotlin or Android code.",
     "Regex helper": "You are a regex helper. You can help people write regular expressions. Just return the regular expression. If you have any questions, please ask.",
     "Linux command helper": "You are a Linux command helper. You can help people write Linux commands. Just return the Linux command. If you have any questions, please ask. If I need to install a package, please let me know.",
+    "公告润色": "你是公告润色助手。你可以帮助人们润色公告。只需返回润色后的公告。如果有任何问题，请问。"
 }
 
 
@@ -274,6 +275,7 @@ class ChatGPT:
                 "stream": ChatMode.stream_mode if not self.model.startswith('o1') else False,
                 "temperature": self.temperature
             }
+            start_time = time.time()
             response = self.send_request(data)
             if response is None:
                 self.messages.pop()
@@ -285,11 +287,17 @@ class ChatGPT:
             if reply_message is not None:
                 log.info(f"ChatGPT: {reply_message['content']}")
                 self.messages.append(reply_message)
-                self.current_tokens = count_token(self.messages)
+                if self.model.startswith('o1'):
+                    self.current_tokens = response.json()["usage"]["total_tokens"]
+                else:
+                    self.current_tokens = count_token(self.messages)
                 self.add_total_tokens(self.current_tokens)
 
                 if len(self.messages) == 3 and self.auto_gen_title_background_enable:
                     self.gen_title_messages.put(self.messages[1]['content'])
+                end_time = time.time()
+
+                console.print(_("gpt_term.chat_time_used",time_used=round(end_time-start_time, 2)))
 
                 if self.tokens_limit - self.current_tokens in range(1, 500):
                     console.print(
@@ -542,11 +550,11 @@ class CommandCompleter(Completer):
             '/model': {
                 "o1-mini",
                 "o1-preview",
-                "gpt-4o",
+                # "gpt-4o",
                 "gpt-4o-mini",
                 "gpt-4o-all",
-                "n-gpt-4o",
-                "qwen1.5-110b-chat",
+                # "n-gpt-4o",
+                # "qwen1.5-110b-chat",
                 # "gpt-4-1106-preview",
                 # "gpt-4-vision-preview",
                 # "gpt-4",
@@ -560,16 +568,7 @@ class CommandCompleter(Completer):
                 # "gpt-3.5-turbo-16k-0613"
             },
             '/save': PathCompleter(file_filter=self.path_filter),
-            '/system': {
-                "Morse code translator",
-                "Algorithm expert",
-                "Sql query helper",
-                "Python code assistant",
-                "Rust code assistant",
-                "Kotlin or Android code assistant",
-                "Regex helper",
-                "Linux command helper",
-            },
+            '/system': set(PROMPT_MAPS.keys()),
             '/rand': None,
             '/temperature': None,
             '/title': None,
